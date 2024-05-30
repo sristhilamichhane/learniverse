@@ -1,10 +1,9 @@
 "use client";
-import React from "react";
+
 import * as z from "zod";
 import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useRouter } from "next/navigation";
 import {
   Form,
   FormControl,
@@ -17,20 +16,17 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 
 const formSchema = z.object({
-  title: z.string().min(1, {
+  title: z.string().trim().min(2, {
     message: "Title is required",
   }),
 });
 
-type Props = {};
-
-export default function Page({}: Props) {
-  // Note the uppercase 'P' in 'Page'
+const CreatePage = () => {
   const router = useRouter();
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -39,25 +35,25 @@ export default function Page({}: Props) {
   });
 
   const { isSubmitting, isValid } = form.formState;
-
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    // console.log(values);
     try {
+      // console.log(values);
       const response = await axios.post("/api/courses", values);
+
       router.push(`/teacher/courses/${response.data.id}`);
-      toast.success("Course created");
-    } catch (e) {
-      // console.log("Something went wrong");
+      toast.success("Course Created");
+    } catch (error) {
+      console.log(error);
       toast.error("Something went wrong");
     }
   };
   return (
     <div className="max-w-5xl mx-auto flex md:items-center md:justify-center h-full p-6">
-      <div>
+      <div className="">
         <h1 className="text-2xl">Name your course</h1>
         <p className="text-sm text-slate-600">
-          What would you like to name your course? Don&apos;t worry, you can
-          change this later.
+          What would you like to name your course ? Don&apos;t worry , you can
+          change this later
         </p>
         <Form {...form}>
           <form
@@ -69,11 +65,11 @@ export default function Page({}: Props) {
               name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Course Title</FormLabel>
+                  <FormLabel>Course title</FormLabel>
                   <FormControl>
                     <Input
-                      disabled={isSubmitting}
-                      placeholder="e.g. 'Advanced web development"
+                      placeholder="e.g 'Advanced web development'"
+                      // by spreading the field we remove onChange onBlur ...
                       {...field}
                     />
                   </FormControl>
@@ -86,7 +82,7 @@ export default function Page({}: Props) {
             />
             <div className="flex items-center gap-x-2">
               <Link href="/">
-                <Button variant="ghost" type="button">
+                <Button type="button" variant="ghost">
                   Cancel
                 </Button>
               </Link>
@@ -99,4 +95,6 @@ export default function Page({}: Props) {
       </div>
     </div>
   );
-}
+};
+
+export default CreatePage;
