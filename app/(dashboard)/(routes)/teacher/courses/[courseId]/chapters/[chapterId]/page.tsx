@@ -10,8 +10,8 @@ import ChapterAccessForm from "./_components/chapter-access-form";
 
 import { Metadata } from "next";
 import ChapterVideoForm from "./_components/chapter-video-form";
-// import { Banner } from "@/components/banner";
-// import ChapterActions from "./_components/chapter-actions";
+import { Banner } from "@/components/banner";
+import ChapterActions from "./_components/chapters-actions";
 export const metadata: Metadata = {
   title: "Chapter Description | Access Setting| | Title",
   description: "Chapter Description | Access Setting | Title",
@@ -42,19 +42,23 @@ const ChapterIdPage = async ({
   }
 
   const requiredFields = [chapter.title, chapter.description, chapter.videoUrl];
+
   const totalFields = requiredFields.length;
+
   const completedFields = requiredFields.filter(Boolean).length;
+
   const completionText = `(${completedFields}/${totalFields})`;
+
   const isComplete = requiredFields.every(Boolean);
 
   return (
     <>
-      {/* {!chapter.isPublished && (
+      {!chapter.isPublished && (
         <Banner
           variant="warning"
           label="This chapter is unpublished. It will not be visible in the course"
         />
-      )} */}
+      )}
       <div className="p-6">
         <div className="flex items-center justify-between">
           <div className="w-full">
@@ -71,14 +75,13 @@ const ChapterIdPage = async ({
                   Complete all fields{completionText}
                 </span>
               </div>
-
-              {/* <ChapterActions
+              <ChapterActions
                 disabled={!isComplete}
                 courseId={params.courseId}
                 chapterId={params.chapterId}
                 isPublished={chapter.isPublished}
-                chapterData={chapter!}
-              /> */}
+                // chapterData={chapter!}
+              />
             </div>
           </div>
         </div>
