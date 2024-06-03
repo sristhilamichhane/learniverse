@@ -9,7 +9,7 @@ import ChapterDescriptionForm from "./_components/chapter-description-form";
 import ChapterAccessForm from "./_components/chapter-access-form";
 
 import { Metadata } from "next";
-// import ChapterVideoForm from "./_components/chapter-video-form";
+import ChapterVideoForm from "./_components/chapter-video-form";
 // import { Banner } from "@/components/banner";
 // import ChapterActions from "./_components/chapter-actions";
 export const metadata: Metadata = {
@@ -121,11 +121,11 @@ const ChapterIdPage = async ({
               <IconBadge icon={Video} />
               <h2 className="text-xl">Add a video</h2>
             </div>
-            {/* <ChapterVideoForm
+            <ChapterVideoForm
               initialData={chapter}
               courseId={params.courseId}
               chapterId={params.chapterId}
-            /> */}
+            />
           </div>
         </div>
       </div>
