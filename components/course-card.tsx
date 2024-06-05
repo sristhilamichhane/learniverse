@@ -49,17 +49,18 @@ const CourseCard = ({
               </span>
             </div>
           </div>
-          {/* {progress !== null ? (
-            <CourseProgress
-              variant={progress === 100 ? "success" : "default"}
-              size="sm"
-              value={progress}
-            />
+          {progress !== null ? (
+            // <CourseProgress
+            //   variant={progress === 100 ? "success" : "default"}
+            //   size="sm"
+            //   value={progress}
+            // />
+            <>cHECk</>
           ) : (
             <p className="text-md md:text-sm font-medium text-slate-700">
               {formatPrice(price)}
             </p>
-          )} */}
+          )}
           {/* <StarRatingValue value={totalReview} /> */}
         </div>
       </div>
