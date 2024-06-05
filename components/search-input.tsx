@@ -16,7 +16,7 @@ const SearchInput = () => {
 
   // set default initial value to currentTitle
 
-  const [value, setValue] = useState(currentTitle);
+const [value, setValue] = useState(currentTitle ?? "");
   const debouncedValue = useDebounce(value);
 
   const currentCategoryId = searchParams.get("categoryId");
