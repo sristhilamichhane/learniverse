@@ -23,7 +23,7 @@ const CourseEnrollButton = ({ price, courseId }: CourseEnrollButtonProps) => {
   // }
   const onClick = async () => {
     try {
-      setIsLoading(false);
+      setIsLoading(true);
       const response = await axios.post(`/api/courses/${courseId}/checkout`);
       window.location.assign(response.data.url);
     } catch (error) {
