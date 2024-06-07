@@ -3,7 +3,7 @@ import Link from "next/link";
 import { IconBadge } from "./icon-badge";
 import { BookOpen } from "lucide-react";
 import { formatPrice } from "@/lib/format";
-// import { CourseProgress } from "./course-progress";
+import { CourseProgress } from "./course-progress";
 // import StarRatingValue from "@/app/(course)/courses/[courseId]/chapters/[chapterId]/_components/star-rating-value";
 
 interface CourseCardProps {
@@ -50,12 +50,11 @@ const CourseCard = ({
             </div>
           </div>
           {progress !== null ? (
-            // <CourseProgress
-            //   variant={progress === 100 ? "success" : "default"}
-            //   size="sm"
-            //   value={progress}
-            // />
-            <>cHECk</>
+            <CourseProgress
+              variant={progress === 100 ? "success" : "default"}
+              size="sm"
+              value={progress}
+            />
           ) : (
             <p className="text-md md:text-sm font-medium text-slate-700">
               {formatPrice(price)}
