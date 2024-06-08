@@ -4,7 +4,7 @@ import { IconBadge } from "./icon-badge";
 import { BookOpen } from "lucide-react";
 import { formatPrice } from "@/lib/format";
 import { CourseProgress } from "./course-progress";
-// import StarRatingValue from "@/app/(course)/courses/[courseId]/chapters/[chapterId]/_components/star-rating-value";
+import StarRatingValue from "@/app/(course)/courses/[courseId]/chapters/[chapterId]/_components/star-rating-value";
 
 interface CourseCardProps {
   id: string;
@@ -60,7 +60,7 @@ const CourseCard = ({
               {formatPrice(price)}
             </p>
           )}
-          {/* <StarRatingValue value={totalReview} /> */}
+          <StarRatingValue value={totalReview} />
         </div>
       </div>
     </Link>
