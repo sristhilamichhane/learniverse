@@ -10,9 +10,9 @@ import { Preview } from "@/components/preview";
 import { VideoPlayer } from "./_components/video-player";
 import CourseProgressButton from "./_components/course-progress-button";
 import CourseEnrollButton from "./_components/course-enroll-button";
-// import CourseCommentWithStartForm from "./_components/course-comment-with-star-form";
+import CourseCommentWithStartForm from "./_components/course-comment-with-star-form";
 import { db } from "@/lib/db";
-// import UserProfileReview from "@/components/user-profile-review";
+import UserProfileReview from "@/components/user-profile-review";
 
 const ChapterIdPage = async ({
   params,
@@ -140,12 +140,12 @@ const ChapterIdPage = async ({
           <Separator />
           {purchase && (
             <div className="p-4">
-              {/* <CourseCommentWithStartForm
+              <CourseCommentWithStartForm
                 initialData={reviewCourse!}
                 userId={userId}
                 courseId={params.courseId}
                 reviewId={reviewCourse?.id!}
-              /> */}
+              />
             </div>
           )}
 
@@ -157,11 +157,11 @@ const ChapterIdPage = async ({
                     return (
                       <>
                         <div className="flex flex-wrap items-center justify-center gap-5 cursor-pointer">
-                          {/* <UserProfileReview
+                          <UserProfileReview
                             review={rating.review!}
                             reviewValue={rating.rating!}
                             createdAt={rating.createdAt}
-                          /> */}
+                          />
                         </div>
                       </>
                     );
