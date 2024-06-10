@@ -45,6 +45,7 @@
     "react-quill": "^2.0.0",
     "react-responsive-carousel": "^3.2.23",
     "react-timestamp": "^6.0.0",
+    "recharts": "^2.12.7",
     "stripe": "^15.9.0",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
