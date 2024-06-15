@@ -13,6 +13,7 @@ import CourseEnrollButton from "./_components/course-enroll-button";
 import CourseCommentWithStartForm from "./_components/course-comment-with-star-form";
 import { db } from "@/lib/db";
 import UserProfileReview from "@/components/user-profile-review";
+import GenerateMCQButton from "./_components/course-mcq";
 
 const ChapterIdPage = async ({
   params,
@@ -131,6 +132,9 @@ const ChapterIdPage = async ({
             </>
           )}
         </div>
+        <div className="p-4">
+          <GenerateMCQButton courseId={params.courseId} />
+        </div>
 
         <div className="p-4 text-2xl text-sky-950  font-black">
           ⭐ {course.totalRating} course rating
@@ -179,6 +183,7 @@ const ChapterIdPage = async ({
           )}
         </div>
       </div>
+     
     </div>
   );
 };
