@@ -25,6 +25,7 @@ model Course {
   attachments   Attachment[]
   purchases     Purchase[]
   courseRatting CourseRatting[]
+  mcqs          MCQ[] 
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -134,3 +135,15 @@ model StripeCustomer {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+model MCQ {
+  id           String   @id @default(uuid())
+  question     String
+  options      Json
+  correctAnswer String
+  courseId     String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  course       Course   @relation(fields: [courseId], references: [id])
+}
+
