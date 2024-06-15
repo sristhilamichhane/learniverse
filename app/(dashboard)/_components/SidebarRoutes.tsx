@@ -1,5 +1,11 @@
 "use client";
-import { BarChart, Compass, Layout, List,MessageCircleQuestion } from "lucide-react";
+import {
+  BarChart,
+  Compass,
+  Layout,
+  List,
+  MessageCircleQuestion,
+} from "lucide-react";
 import React from "react";
 import SidebarItem from "./SidebarItem";
 import { usePathname } from "next/navigation";
@@ -16,11 +22,6 @@ const guestRoutes = [
     icon: Compass,
     label: "Browse",
     href: "/search",
-  },
-  {
-    icon:MessageCircleQuestion ,
-    label: "Quiz",
-    href: "/quiz",
   },
 ];
 
