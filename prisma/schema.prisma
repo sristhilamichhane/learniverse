@@ -136,7 +136,7 @@ model StripeCustomer {
   updatedAt DateTime @updatedAt
 }
 model MCQ {
-  id           String   @id @default(uuid())
+  id               String @id @default(auto()) @map("_id") @db.ObjectId
   question     String
   options      Json
   correctAnswer String
