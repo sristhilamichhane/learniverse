@@ -10,48 +10,60 @@ const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 export async function POST(req: Request) {
   try {
-    const { courseId } = await req.json();
+    const { courseId,chapterId,level } = await req.json();
 
-    // Fetch the attachment for the course
-    const attachment = await db.attachment.findFirst({
-      where: { courseId },
+    
+    // Fetch the chapter for the course
+    const chapter = await db.chapter.findFirst({
+      where: { courseId, id: chapterId },
     });
 
-    if (!attachment) {
-      return NextResponse.json({ message: "Attachment not found" }, { status: 404 });
+    if (!chapter) {
+      return NextResponse.json({ message: "Chapter not found" }, { status: 404 });
     }
 
-    // Fetch the attachment data
-    const attachmentResponse = await axios.get(attachment.url);
-    const attachmentData = attachmentResponse.data;
+    const chapterDescription = chapter.description;
 
-    // Generate MCQs using the Gemini API
-    const prompt = `From the provided text, generate 5 multiple choice questions with options and a correct answer in JSON format.\n${attachmentData}`;
+    if (!chapterDescription) {
+      return NextResponse.json({ message: "Chapter description not found" }, { status: 404 });
+    }
+
+    const option_number =
+      level === "advanced" ? 4 : level === "intermediate" ? 3 : 2;
+
+    const prompt = `${chapterDescription}
+      \n\n
+      Generate multiple choice questions with ${option_number} options and correct answers based on the provided text. 
+      Return the result strictly following the structure with ${option_number} options as a JSON array of objects, where each object has the following structure:
+      {
+        "question": "The question text",
+        "options": ${option_number === 4
+        ? `["Option A", "Option B", "Option C", "Option D"]`
+        : option_number === 3
+          ? `["Option A", "Option B", "Option C"]`
+          : `["Option A", "Option B"]`},
+        "correctAnswer": "The correct option"
+      }`;
+
     const result = await model.generateContent(prompt);
-    let generatedMCQs = result.response.text(); // Parse the response
+    const response = result.response;
+    console.log(response);
+    const response_string = response?.candidates?.[0]?.content?.parts?.[0]?.text;
 
-    // Clean the response text to ensure it's valid JSON
-    generatedMCQs = generatedMCQs.replace(/```json|```/g, '').trim();
 
-    // Parse the cleaned JSON
-    const mcqs = JSON.parse(generatedMCQs);
+    if (!response_string) {
+      throw new Error("Response string is undefined.");
+    }
 
-    console.log(mcqs)
+    const match = response_string.match(/```json([\s\S]*?)```/);
 
-    // Save the generated MCQs to the database
-    // const savedMCQs = [];
-    // for (const mcq of mcqs) {
-    //   const savedMCQ = await db.mCQ.createMany({
-    //     data: {
-    //       question: mcq.question,
-    //       options: mcq.options,
-    //       correctAnswer: mcq.correctAnswer,
-    //       courseId,
-    //     },
-    //   });
-    //   savedMCQs.push(savedMCQ);
-    // }
+    if (!match) {
+      throw new Error("Invalid Gemini response format.");
+    }
 
+    const parsed_data = match[1].trim();
+    const mcqs = JSON.parse(parsed_data);
+       
     return NextResponse.json(mcqs);
   } catch (error) {
     console.error("Error generating quiz:", error);
