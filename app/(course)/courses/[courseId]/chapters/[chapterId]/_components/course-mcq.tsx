@@ -10,7 +10,7 @@ interface GenerateMCQButtonProps {
 interface MCQ {
   question: string;
   options: string[];
-  answer: string; // Updated to match the data property
+  correctAnswer: string;
 }
 
 const GenerateMCQButton = ({ courseId }: GenerateMCQButtonProps) => {
@@ -18,11 +18,16 @@ const GenerateMCQButton = ({ courseId }: GenerateMCQButtonProps) => {
   const [generatedMCQs, setGeneratedMCQs] = useState<MCQ[]>([]);
   const [userAnswers, setUserAnswers] = useState<string[]>([]);
   const [showResults, setShowResults] = useState(false);
+  const [score, setScore] = useState(0);
+  const [level, setLevel] = useState("beginner");
 
   const handleGenerateMCQs = async () => {
     setLoading(true);
     try {
-      const response = await axios.post("/api/generate-mcq", { courseId });
+      const response = await axios.post("/api/generate-mcq", {
+        courseId,
+        level,
+      });
       setGeneratedMCQs(response.data);
       setUserAnswers(Array(response.data.length).fill(""));
       setShowResults(false);
@@ -40,6 +45,16 @@ const GenerateMCQButton = ({ courseId }: GenerateMCQButtonProps) => {
   };
 
   const handleShowResults = () => {
+    const correctAnswers = generatedMCQs.reduce((acc, mcq, index) => {
+      if (mcq.correctAnswer === userAnswers[index]) {
+        return acc + 1;
+      }
+      return acc;
+    }, 0);
+
+    const userScore = (correctAnswers / generatedMCQs.length) * 100;
+    setScore(userScore);
+
     setShowResults(true);
   };
 
@@ -47,6 +62,22 @@ const GenerateMCQButton = ({ courseId }: GenerateMCQButtonProps) => {
     setGeneratedMCQs([]);
     setUserAnswers([]);
     setShowResults(false);
+    setScore(0);
+  };
+
+  const handleNextLevel = () => {
+    if (score >= 80) {
+      setLevel("advanced");
+    } else if (score >= 60) {
+      setLevel("intermediate");
+    } else {
+      setLevel("beginner");
+    }
+
+    setGeneratedMCQs([]);
+    setUserAnswers([]);
+    setShowResults(false);
+    setScore(0);
   };
 
   return (
@@ -60,7 +91,9 @@ const GenerateMCQButton = ({ courseId }: GenerateMCQButtonProps) => {
       </button>
       {generatedMCQs.length > 0 && !showResults && (
         <div>
-          <h3 className="text-xl font-semibold mb-4">Generated MCQs:</h3>
+          <h3 className="text-xl font-semibold mb-4">
+            Generated MCQs ({level}):
+          </h3>
           <ul>
             {generatedMCQs.map((mcq, index) => (
               <li key={index} className="mb-4">
@@ -97,6 +130,7 @@ const GenerateMCQButton = ({ courseId }: GenerateMCQButtonProps) => {
       {showResults && (
         <div className="mt-4">
           <h3 className="text-xl font-semibold mb-4">Results:</h3>
+          <p className="mb-4">Your score: {score.toFixed(2)}%</p>
           <ul>
             {generatedMCQs.map((mcq, index) => (
               <li key={index} className="mb-4">
@@ -116,7 +150,7 @@ const GenerateMCQButton = ({ courseId }: GenerateMCQButtonProps) => {
                       <label
                         htmlFor={`result-question-${index}-option-${i}`}
                         className={
-                          option === mcq.answer // Updated to use 'answer' property
+                          option === mcq.correctAnswer
                             ? "text-green-500"
                             : userAnswers[index] === option
                             ? "text-red-500"
@@ -131,18 +165,27 @@ const GenerateMCQButton = ({ courseId }: GenerateMCQButtonProps) => {
                 <p>
                   Correct Answer:{" "}
                   <span className="font-bold text-green-500">
-                    {mcq.answer} {/* Updated to use 'answer' property */}
+                    {mcq.correctAnswer}
                   </span>
                 </p>
               </li>
             ))}
           </ul>
-          <button
-            onClick={handleRestart}
-            className="mt-4 p-2 bg-gray-500 text-white rounded"
-          >
-            Restart
-          </button>
+          {score >= 60 ? (
+            <button
+              onClick={handleNextLevel}
+              className="mt-4 p-2 bg-green-500 text-white rounded"
+            >
+              Next Level
+            </button>
+          ) : (
+            <button
+              onClick={handleRestart}
+              className="mt-4 p-2 bg-gray-500 text-white rounded"
+            >
+              Restart
+            </button>
+          )}
         </div>
       )}
     </div>
