@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import axios from "axios";
 
 if (!process.env.GEMINI_API_KEY) throw new Error("No Gemini API key");
 
@@ -10,47 +9,74 @@ const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 export async function POST(req: Request) {
   try {
-    const { courseId } = await req.json();
+    const { courseId, chapterId, level } = await req.json();
 
-    // Fetch the attachment for the course
-    const attachment = await db.attachment.findFirst({
-      where: { courseId },
+    // Fetch the chapter for the course
+    const chapter = await db.chapter.findFirst({
+      where: { courseId, id: chapterId },
     });
 
-    if (!attachment) {
-      return NextResponse.json({ message: "Attachment not found" }, { status: 404 });
+    if (!chapter) {
+      return NextResponse.json({ message: "Chapter not found" }, { status: 404 });
     }
 
-    // Fetch the attachment data
-    const attachmentResponse = await axios.get(attachment.url);
-    const attachmentData = attachmentResponse.data;
+    const chapterDescription = chapter.description;
 
-    // Generate MCQs using the Gemini API
-    const prompt = `From the provided text, generate 5 multiple choice questions with options and a correct answer in JSON format.\n${attachmentData}`;
+    if (!chapterDescription) {
+      return NextResponse.json({ message: "Chapter description not found" }, { status: 404 });
+    }
+
+    const levelInstructions: { [key: string]: string } = {
+      beginner: "Generate straightforward questions covering basic concepts.",
+      intermediate: "Generate questions that require understanding and application of concepts.",
+      advanced: "Generate questions that require analysis and synthesis of the content."
+    };
+
+    if (!levelInstructions[level]) {
+      return NextResponse.json({ message: "Invalid level" }, { status: 400 });
+    }
+
+    const prompt = `${chapterDescription}
+      \n\n
+      ${levelInstructions[level]}
+      Generate multiple choice questions with 3 options and correct answers based on the provided text. 
+      Return the result strictly following the structure as a JSON array of objects, where each object has the following structure:
+      {
+        "question": "The question text",
+        "options": ["Option A", "Option B", "Option C","Option D"],
+        "correctAnswer": "The correct option"
+      }`;
+
     const result = await model.generateContent(prompt);
-    let generatedMCQs = result.response.text(); // Parse the response
+    const response = result.response;
 
-    // Clean the response text to ensure it's valid JSON
-    generatedMCQs = generatedMCQs.replace(/```json|```/g, '').trim();
+    console.log("Raw response:", JSON.stringify(response, null, 2));
 
-    // Parse the cleaned JSON
-    const mcqs = JSON.parse(generatedMCQs);
+    const response_string = response?.candidates?.[0]?.content?.parts?.[0]?.text;
 
-    console.log(mcqs)
+    if (!response_string) {
+      throw new Error("Response string is undefined.");
+    }
 
-    // Save the generated MCQs to the database
-    // const savedMCQs = [];
-    // for (const mcq of mcqs) {
-    //   const savedMCQ = await db.mCQ.createMany({
-    //     data: {
-    //       question: mcq.question,
-    //       options: mcq.options,
-    //       correctAnswer: mcq.correctAnswer,
-    //       courseId,
-    //     },
-    //   });
-    //   savedMCQs.push(savedMCQ);
-    // }
+    console.log("Response string:", response_string);
+
+    // Try to directly parse the JSON response if it's valid JSON
+    try {
+      const mcqs = JSON.parse(response_string);
+      return NextResponse.json(mcqs);
+    } catch (jsonParseError) {
+      console.error("Error parsing JSON directly:", jsonParseError);
+    }
+
+    // If direct parsing fails, look for JSON within code fences
+    const match = response_string.match(/```json([\s\S]*?)```/);
+
+    if (!match) {
+      throw new Error("Invalid Gemini response format.");
+    }
+
+    const parsed_data = match[1].trim();
+    const mcqs = JSON.parse(parsed_data);
 
     return NextResponse.json(mcqs);
   } catch (error) {
