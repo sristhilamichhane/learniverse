@@ -43,7 +43,7 @@ export async function POST(req: Request) {
       Return the result strictly following the structure as a JSON array of objects, where each object has the following structure:
       {
         "question": "The question text",
-        "options": ["Option A", "Option B", "Option C","Option D"],
+        "options": ["Option A", "Option B", "Option C"],
         "correctAnswer": "The correct option"
       }`;
 
