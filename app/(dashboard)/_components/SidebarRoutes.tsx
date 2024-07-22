@@ -4,6 +4,7 @@ import {
   Compass,
   Layout,
   List,
+  Award,
   MessageCircleQuestion,
 } from "lucide-react";
 import React from "react";
@@ -22,6 +23,11 @@ const guestRoutes = [
     icon: Compass,
     label: "Browse",
     href: "/search",
+  },
+  {
+    icon: Award,
+    label: "Leaderboard",
+    href: "/leaderboard",
   },
 ];
 
