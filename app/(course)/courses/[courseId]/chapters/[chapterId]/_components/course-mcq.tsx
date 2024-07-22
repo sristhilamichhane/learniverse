@@ -2,6 +2,17 @@
 
 import { useState } from "react";
 import axios from "axios";
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogFooter,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogAction,
+  AlertDialogCancel,
+} from "@/components/ui/alert-dialog";
 
 interface GenerateMCQButtonProps {
   courseId: string;
@@ -20,6 +31,7 @@ const GenerateMCQButton = ({ courseId }: GenerateMCQButtonProps) => {
   const [showResults, setShowResults] = useState(false);
   const [score, setScore] = useState(0);
   const [level, setLevel] = useState("beginner");
+  const [showDialog, setShowDialog] = useState(false);
 
   const handleGenerateMCQs = async () => {
     setLoading(true);
@@ -66,12 +78,12 @@ const GenerateMCQButton = ({ courseId }: GenerateMCQButtonProps) => {
   };
 
   const handleNextLevel = () => {
-    if (score >= 80) {
-      setLevel("advanced");
-    } else if (score >= 60) {
+    if (level === "beginner") {
       setLevel("intermediate");
+    } else if (level === "intermediate") {
+      setLevel("advanced");
     } else {
-      setLevel("beginner");
+      setShowDialog(true);
     }
 
     setGeneratedMCQs([]);
@@ -171,7 +183,31 @@ const GenerateMCQButton = ({ courseId }: GenerateMCQButtonProps) => {
               </li>
             ))}
           </ul>
-          {score >= 60 ? (
+          {level === "advanced" ? (
+            <AlertDialog open={showDialog} onOpenChange={setShowDialog}>
+              <AlertDialogTrigger asChild>
+                <button className="mt-4 p-2 bg-gray-500 text-white rounded">
+                  Show Final Results
+                </button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Final Results</AlertDialogTitle>
+                </AlertDialogHeader>
+                <AlertDialogDescription>
+                  Your final score: {score.toFixed(2)}%
+                </AlertDialogDescription>
+                <AlertDialogFooter>
+                  <AlertDialogCancel asChild>
+                    <button className="mt-2 sm:mt-0">Close</button>
+                  </AlertDialogCancel>
+                  <AlertDialogAction asChild>
+                    <button onClick={handleRestart}>Restart</button>
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          ) : score >= 60 ? (
             <button
               onClick={handleNextLevel}
               className="mt-4 p-2 bg-green-500 text-white rounded"
