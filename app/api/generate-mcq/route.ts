@@ -39,11 +39,11 @@ export async function POST(req: Request) {
     const prompt = `${chapterDescription}
       \n\n
       ${levelInstructions[level]}
-      Generate multiple choice questions with 3 options and correct answers based on the provided text. 
+      Generate multiple choice questions with 4 options and correct answers based on the provided text. 
       Return the result strictly following the structure as a JSON array of objects, where each object has the following structure:
       {
         "question": "The question text",
-        "options": ["Option A", "Option B", "Option C"],
+        "options": ["Option A", "Option B", "Option C","Option D"],
         "correctAnswer": "The correct option"
       }`;
 
