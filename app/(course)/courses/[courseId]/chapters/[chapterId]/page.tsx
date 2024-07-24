@@ -110,9 +110,11 @@ const ChapterIdPage = async ({
             )}
           </div>
           <Separator />
-          <div>
-            <Preview value={chapter.description!} />
-          </div>
+          {purchase && (
+            <div>
+              <Preview value={chapter.description!} />
+            </div>
+          )}
           {!!attachments.length && (
             <>
               <Separator />
@@ -132,9 +134,11 @@ const ChapterIdPage = async ({
             </>
           )}
         </div>
-        <div className="p-4">
-          <GenerateMCQButton courseId={params.courseId} />
-        </div>
+        {purchase && (
+          <div className="p-4">
+            <GenerateMCQButton courseId={params.courseId} />
+          </div>
+        )}
 
         <div className="p-4 text-2xl text-sky-950  font-black">
           ⭐ {course.totalRating} course rating
@@ -183,7 +187,6 @@ const ChapterIdPage = async ({
           )}
         </div>
       </div>
-     
     </div>
   );
 };
