@@ -1,7 +1,10 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { formatPrice } from "@/lib/format";
+import { auth} from "@clerk/nextjs/server";
+import {  useAuth } from "@clerk/nextjs";
 import axios from "axios";
+import { redirect } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
@@ -11,26 +14,18 @@ interface CourseEnrollButtonProps {
 }
 const CourseEnrollButton = ({ price, courseId }: CourseEnrollButtonProps) => {
   const [isLoading, setIsLoading] = useState(false);
+  // const { userId } = auth();
+  const { isLoaded, userId, sessionId, getToken } = useAuth();
 
+  // if (!userId) {
+  // 	toast.error("Please Login first");
+  // 	return redirect("/sign-up");
+  // }
   const onClick = async () => {
     try {
       setIsLoading(true);
       const response = await axios.post(`/api/courses/${courseId}/checkout`);
-      const { esewaUrl, paymentData } = response.data;
-
-      // Create and submit a form to eSewa
-      const form = document.createElement("form");
-      form.method = "POST";
-      form.action = esewaUrl;
-      Object.entries(paymentData).forEach(([key, value]) => {
-        const input = document.createElement("input");
-        input.type = "hidden";
-        input.name = key;
-        input.value = value as string;
-        form.appendChild(input);
-      });
-      document.body.appendChild(form);
-      form.submit();
+      window.location.assign(response.data.url);
     } catch (error) {
       console.log(error);
       toast.error("Something went wrong");
@@ -38,7 +33,6 @@ const CourseEnrollButton = ({ price, courseId }: CourseEnrollButtonProps) => {
       setIsLoading(false);
     }
   };
-
   return (
     <Button
       onClick={onClick}
