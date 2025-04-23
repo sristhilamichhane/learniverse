@@ -81,8 +81,8 @@ const ChapterIdPage = async ({
         />
       )}
       <div className="flex flex-col max-w-4xl mx-auto pb-20">
-        <div className="p-4">
-          <VideoPlayer
+        <div className="p-4 ">
+          {/* <VideoPlayer
             chapterId={params.chapterId}
             title={chapter.title}
             courseId={params.courseId}
@@ -90,7 +90,8 @@ const ChapterIdPage = async ({
             playbackId={muxData?.playbackId!}
             isLocked={isLocked}
             completeOnEnd={completeOnEnd}
-          />
+          /> */}
+          {/* <iframe src=""></iframe> */}
         </div>
         <div>
           <div className="p-4 flex flex-col md:flex-row items-center justify-between">
@@ -166,9 +167,11 @@ const ChapterIdPage = async ({
                       <>
                         <div className="flex flex-wrap items-center justify-center gap-5 cursor-pointer">
                           <UserProfileReview
+                            key={rating.id}
                             review={rating.review!}
                             reviewValue={rating.rating!}
                             createdAt={rating.createdAt}
+                            userName={rating.userName}
                           />
                         </div>
                       </>
