@@ -1,10 +1,9 @@
-
-
 # LEARNIVERSE-Personalized learning through AI generated tests
 
 ## Overview
 
 This project is a Learning Management System (LMS) built using the following technologies:
+
 - **Next.js 14**: A React framework for building server-side rendered (SSR) and static web applications.
 - **Gemini API**: Used for generating educational content such as multiple-choice questions (MCQs).
 - **Prisma ORM**: An Object-Relational Mapper for managing the database schema and queries.
@@ -32,12 +31,14 @@ This project is a Learning Management System (LMS) built using the following tec
 ### Setup
 
 1. **Clone the repository:**
+
    ```bash
    git clone https://github.com/yourusername/lms.git
    cd lms
    ```
 
 2. **Install dependencies:**
+
    ```bash
    npm install
    ```
@@ -45,6 +46,7 @@ This project is a Learning Management System (LMS) built using the following tec
 3. **Configure environment variables:**
 
    Create a `.env.local` file in the root directory and add the following variables:
+
    ```env
    DATABASE_URL=mongodb://localhost:27017/lms
    GEMINI_API_KEY=your-gemini-api-key
@@ -53,12 +55,14 @@ This project is a Learning Management System (LMS) built using the following tec
    ```
 
 4. **Set up the database schema:**
+
    ```bash
    npx prisma generate
    npx prisma migrate dev --name init
    ```
 
 5. **Run the development server:**
+
    ```bash
    npm run dev
    ```
@@ -104,12 +108,47 @@ lms/
 │   ├── courses/        # Course management pages
 │   └── ...             # Other pages
 ├── prisma/             # Prisma schema and migrations
+│   ├── models/         # Individual Prisma model files
+│   └── combine-models.js # Script to combine model files
 ├── public/             # Public assets
 ├── styles/             # Global styles
 ├── utils/              # Utility functions
 ├── .env.local          # Environment variables
 └── ...                 # Other configuration files
 ```
+
+## Database Schema Management
+
+The Prisma schema is organized into separate files for better maintainability. Each model is defined in its own file under the `prisma/models/` directory.
+
+### Managing Prisma Models
+
+1. **Model Organization:**
+
+   - Individual model files are located in `prisma/models/` directory
+   - Each model file follows the naming pattern: `model-name.model.prisma`
+
+2. **Combining Models:**
+
+   ```bash
+   # Run this command whenever you make changes to model files
+   node prisma/combine-models.js
+   ```
+
+   This script combines all model files into the main `schema.prisma` file.
+
+3. **Generating Prisma Client:**
+
+   ```bash
+   # After combining models, generate the Prisma client
+   npx prisma generate
+   ```
+
+4. **Workflow:**
+   - Make changes to individual model files in `prisma/models/`
+   - Run the combine script
+   - Generate the Prisma client
+   - Run migrations if needed
 
 ## Contributing
 
@@ -132,4 +171,3 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 - Thanks to the contributors of [Next.js](https://nextjs.org/), [Prisma](https://www.prisma.io/), [MongoDB](https://www.mongodb.com/), [Tailwind CSS](https://tailwindcss.com/), and [ShadCN UI](https://shadcn.dev/).
 - Special thanks to the team behind the Gemini API.
-

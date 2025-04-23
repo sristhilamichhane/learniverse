@@ -1,0 +1,30 @@
+model Chapter {
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String?
+  videoUrl    String?
+  position    Int
+  isPublished Boolean @default(false)
+  isFree      Boolean @default(false)
+
+  muxData MuxData?
+
+  courseId String @db.ObjectId
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  userProgress UserProgress[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([courseId])
+}
+
+model MuxData {
+  id         String  @id @default(auto()) @map("_id") @db.ObjectId
+  assetId    String
+  playbackId String?
+
+  chapterId String  @unique @db.ObjectId
+  chapter   Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+}

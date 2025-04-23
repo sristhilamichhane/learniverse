@@ -1,44 +1,13 @@
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["fullTextIndex"]
+}
+
 datasource db {
   provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
-generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["fullTextSearch", "fullTextIndex"]
-}
-
-model Course {
-  id          String  @id @default(auto()) @map("_id") @db.ObjectId
-  userId      String
-  title       String
-  description String?
-  imageUrl    String?
-  price       Float?
-  totalRating Float   @default(0)
-  isPublished Boolean @default(false)
-
-  categoryId  String? @db.ObjectId
-  category    Category? @relation(fields: [categoryId], references: [id])
-
-  chapters      Chapter[]
-  attachments   Attachment[]
-  purchases     Purchase[]
-  courseRatting CourseRatting[]
-  mcqs          MCQ[] 
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([categoryId])
-  @@fulltext([title, description])
-}
-
-model Category {
-  id      String   @id @default(auto()) @map("_id") @db.ObjectId
-  name    String   @unique
-  courses Course[]
-}
 
 model Attachment {
   id   String @id @default(auto()) @map("_id") @db.ObjectId
@@ -53,7 +22,11 @@ model Attachment {
 
   @@index([courseId])
 }
-
+model Category {
+  id      String   @id @default(auto()) @map("_id") @db.ObjectId
+  name    String   @unique
+  courses Course[]
+}
 model Chapter {
   id          String  @id @default(auto()) @map("_id") @db.ObjectId
   title       String
@@ -84,12 +57,80 @@ model MuxData {
   chapterId String  @unique @db.ObjectId
   chapter   Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
 }
+model CourseRatting {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  userId  String
+  rating  Int
+  comment String?
 
-model UserProgress {
-  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  courseId String @db.ObjectId
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, courseId])
+  @@index([courseId])
+}
+model Course {
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
   userId      String
-  chapterId   String @db.ObjectId
-  chapter     Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+  imageUrl    String?
+  price       Float?
+  totalRating Float   @default(0)
+  isPublished Boolean @default(false)
+
+  categoryId  String? @db.ObjectId
+  category    Category? @relation(fields: [categoryId], references: [id])
+
+  chapters      Chapter[]
+  attachments   Attachment[]
+  purchases     Purchase[]
+  courseRatting CourseRatting[]
+  mcqs          MCQ[] 
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([categoryId])
+  @@fulltext([title, description])
+}
+model MCQ {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  question String
+  options  String[]
+  answer   String
+
+  courseId String @db.ObjectId
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([courseId])
+}
+model Purchase {
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  userId String
+
+  courseId String @db.ObjectId
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, courseId])
+  @@index([courseId])
+}
+model UserProgress {
+  id        String @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String
+
+  chapterId String  @db.ObjectId
+  chapter   Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+
   isCompleted Boolean @default(false)
 
   createdAt DateTime @default(now())
@@ -98,52 +139,3 @@ model UserProgress {
   @@unique([userId, chapterId])
   @@index([chapterId])
 }
-
-model Purchase {
-  id       String @id @default(auto()) @map("_id") @db.ObjectId
-  userId   String
-  courseId String @db.ObjectId
-  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@unique([userId, courseId])
-  @@index([courseId])
-}
-
-model CourseRatting {
-  id       String  @id @default(auto()) @map("_id") @db.ObjectId
-  rating   Float?
-  review   String?
-  userId   String
-  courseId String @db.ObjectId
-  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@unique([userId, courseId])
-  @@index([courseId])
-}
-
-model StripeCustomer {
-  id               String @id @default(auto()) @map("_id") @db.ObjectId
-  userId           String @unique
-  stripeCustomerId String @unique
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-model MCQ {
-  id               String @id @default(auto()) @map("_id") @db.ObjectId
-  question     String
-  options      Json
-  correctAnswer String
-  courseId     String
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
-  course       Course   @relation(fields: [courseId], references: [id])
-}
-

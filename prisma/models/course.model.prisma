@@ -1,0 +1,25 @@
+model Course {
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String
+  title       String
+  description String?
+  imageUrl    String?
+  price       Float?
+  totalRating Float   @default(0)
+  isPublished Boolean @default(false)
+
+  categoryId  String? @db.ObjectId
+  category    Category? @relation(fields: [categoryId], references: [id])
+
+  chapters      Chapter[]
+  attachments   Attachment[]
+  purchases     Purchase[]
+  courseRatting CourseRatting[]
+  mcqs          MCQ[] 
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([categoryId])
+  @@fulltext([title, description])
+}
