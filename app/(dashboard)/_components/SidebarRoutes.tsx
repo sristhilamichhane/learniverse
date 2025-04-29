@@ -5,7 +5,8 @@ import {
   Layout,
   List,
   Award,
-  MessageCircleQuestion,
+  Bot,
+  BookOpenCheck,
 } from "lucide-react";
 import React from "react";
 import SidebarItem from "./SidebarItem";
@@ -25,10 +26,25 @@ const guestRoutes = [
     href: "/search",
   },
   {
-    icon: Award,
-    label: "Leaderboard",
-    href: "/leaderboard",
+    icon: Bot,
+    label: "AI Test",
+    href: "/aiquestion",
   },
+  {
+    icon: BookOpenCheck,
+    label: "Old Test",
+    href: "/oldquestion",
+  },
+  // {
+  //   icon: Award,
+  //   label: "Leaderboard",
+  //   href: "/leaderboard",
+  // },
+  // {
+  //   icon: Award,
+  //   label: "esewa",
+  //   href: "/esewa",
+  // },
 ];
 
 const teacherRoutes = [
