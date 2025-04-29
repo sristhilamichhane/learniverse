@@ -25,16 +25,15 @@ interface MCQ {
   correctAnswer: string;
 }
 
-const GenerateMCQButton = () => {
+const AIExam = () => {
   const [loading, setLoading] = useState(false);
   const [generatedMCQs, setGeneratedMCQs] = useState<MCQ[]>([]);
   const [userAnswers, setUserAnswers] = useState<string[]>([]);
   const [showResults, setShowResults] = useState(false);
   const [score, setScore] = useState(0);
   const [showDialog, setShowDialog] = useState(false);
-  const [isFromPreviousResult, setIsFromPreviousResult] = useState(false);
 
-  const { user } = useUser();
+  const { user, isLoaded } = useUser();
   const userId = user?.id;
 
   const handleGenerateMCQs = async () => {
@@ -44,7 +43,6 @@ const GenerateMCQButton = () => {
       setGeneratedMCQs(response.data);
       setUserAnswers(Array(response.data.length).fill(""));
       setShowResults(false);
-      setIsFromPreviousResult(false);
     } catch (error) {
       console.error("Error generating MCQs:", error);
     } finally {
@@ -65,33 +63,25 @@ const GenerateMCQButton = () => {
       const weight = index < 60 ? 1 : 2;
       if (isCorrect) totalScore += weight;
     });
-
     setScore(totalScore);
     setShowResults(true);
-    setIsFromPreviousResult(true);
-    
-   if (!isFromPreviousResult) {
-     const trimmedMCQs = generatedMCQs.map((q) => ({
-       question: q.question,
-       options: q.options,
-       correctAnswer: q.correctAnswer,
-     }));
-
-     const payload = {
-       userId: userId,
-       score: totalScore,
-       answers: userAnswers,
-       mcqs: trimmedMCQs,
-     };
-      try {
+    const trimmedMCQs = generatedMCQs.map((q) => ({
+      question: q.question,
+      options: q.options,
+      correctAnswer: q.correctAnswer,
+    }));
+    const payload = {
+      userId: userId,
+      score: totalScore,
+      answers: userAnswers,
+      mcqs: trimmedMCQs,
+    };
+    try {
       await axios.post("/api/save-result", payload);
       console.log("Result saved successfully!");
     } catch (err) {
       console.error(" Failed to save result:", err);
     }
-  } else {
-    console.log("Skipped saving – already loaded from previous result");
-   }
   };
 
   const handleRestart = () => {
@@ -99,19 +89,6 @@ const GenerateMCQButton = () => {
     setUserAnswers([]);
     setShowResults(false);
     setScore(0);
-  };
-  const handleLoadPreviousExam = async () => {
-    try {
-      const response = await axios.get(`/api/save-result?userId=${userId}`);
-      const { mcqs, answers, score } = response.data;
-
-      setGeneratedMCQs(mcqs);
-      setUserAnswers(answers);
-      setScore(score);
-      setShowResults(false);
-    } catch (err) {
-      console.error("Failed to load previous exam:", err);
-    }
   };
 
   return (
@@ -125,16 +102,12 @@ const GenerateMCQButton = () => {
           {loading ? "Generating MCQs..." : "Practice 1001"}
         </button>
         <button
-          onClick={() => generateResultPDF(generatedMCQs, userAnswers, score)}
+          onClick={() =>
+            generateResultPDF(generatedMCQs, userAnswers, score)
+          }
           className="mb-4 p-2 bg-blue-500 text-white rounded"
         >
           Download PDF
-        </button>
-        <button
-          onClick={handleLoadPreviousExam}
-          className="mb-4 ml-2 p-2 bg-purple-500 text-white rounded"
-        >
-          Load Last Exam
         </button>
       </div>
 
@@ -255,4 +228,4 @@ const GenerateMCQButton = () => {
   );
 };
 
-export default GenerateMCQButton;
+export default AIExam;
