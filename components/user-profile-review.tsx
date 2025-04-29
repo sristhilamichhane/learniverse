@@ -1,27 +1,26 @@
 "use client";
 import StarRatingValue from "@/app/(course)/courses/[courseId]/chapters/[chapterId]/_components/star-rating-value";
 import TimeStampForm from "@/app/(course)/courses/[courseId]/chapters/[chapterId]/_components/time-stamp-form";
-import { useUser } from "@clerk/nextjs";
 import Image from "next/image";
 import { Preview } from "./preview";
 
 interface UserProfileReviewProps {
+  userName: string;
   review: string;
   reviewValue: number;
   createdAt: Date;
 }
 const UserProfileReview = ({
+  userName,
   review,
   reviewValue,
   createdAt,
 }: UserProfileReviewProps) => {
-  const { isLoaded, isSignedIn, user } = useUser();
-
   // if (!isLoaded || !isSignedIn) {
   // 	return null;
   // }
-  const firstName = user?.firstName || "Challelign";
-  const lastName = user?.lastName || "Tilahun";
+  const [firstName, ...rest] = userName.trim().split(" ");
+  const lastName = rest.join(" ");
   const initials = `${firstName.charAt(0)}${lastName.charAt(0)}`;
   return (
     <>
@@ -40,14 +39,12 @@ const UserProfileReview = ({
       <div className="w-12 h-12 rounded-full bg-gray-500 text-white flex items-center justify-center">
         <span className="text-lg font-bold">{initials}</span>
       </div>
-      <div>
-        <p className="text-[15px] text-[#333] font-bold">
-          {user?.firstName ? user?.firstName : "Unknown user"}
-        </p>
-        <p className="flex items-center gap-x-4 text-xs text-gray-500 mt-0.5">
+      <div className=" pl-12">
+        <p className="text-[15px] text-[#333] font-bold">{userName}</p>
+        <div className="flex items-center gap-x-4 text-xs text-gray-500 mt-0.5">
           <StarRatingValue starSize="text-xl" value={reviewValue!!} />
           <TimeStampForm createdAt={createdAt} />
-        </p>
+        </div>
       </div>
 
       <div className="bg-slate-100 rounded-md">
