@@ -1,21 +1,13 @@
-"use client";
 import React from "react";
-import DataCard from "../teacher/analytics/_components/data-card";
-import { useRouter } from "next/navigation";
-const OldQuestionPage = () => {
-  const router = useRouter();
+import LastExam from "./_components/LastExam";
 
-  const onclick = () => {
-    router.push("/questionbank");
-  };
+type Props = {};
+
+const page = (props: Props) => {
   return (
-    <div
-      onClick={onclick}
-      className="cursor-pointer max-w-[200px] max-h-[200px] m-5"
-    >
-      <DataCard value={1001} label="Model question set-1" />
+    <div>
+      <LastExam />
     </div>
   );
 };
-
-export default OldQuestionPage;
+export default page;
