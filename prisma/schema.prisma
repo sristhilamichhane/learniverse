@@ -146,4 +146,13 @@ model MCQ {
 
   course       Course   @relation(fields: [courseId], references: [id])
 }
+model ExamResult {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String
+  score     Float
+  answers   Json
+  mcqs      Json
+  createdAt DateTime @default(now())
+}
+
 
