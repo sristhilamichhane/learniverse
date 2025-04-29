@@ -160,12 +160,12 @@ const ChapterIdPage = async ({
 
           {!!courseRatting.length && (
             <>
-              <div className="grid grid-cols-2 gap-4">
-                {courseRatting.map((rating) => {
+              <div className="grid lg:grid-cols-2 gap-2 grid-cols-1 px-2">
+                {courseRatting.map((rating,index) => {
                   if (rating.userId !== userId) {
                     return (
                       <>
-                        <div className="flex flex-wrap items-center justify-center gap-5 cursor-pointer">
+                        <div className="flex flex-wrap items-center justify-center gap-5 cursor-pointer " key={index}>
                           <UserProfileReview
                             key={rating.id}
                             review={rating.review!}
