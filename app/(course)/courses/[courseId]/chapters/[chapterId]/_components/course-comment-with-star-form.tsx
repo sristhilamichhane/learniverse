@@ -144,6 +144,7 @@ const CourseCommentWithStartForm = ({
                 <button
                   onClick={() => onDelete(initialData.id)}
                   className="ml-auto hover:opacity-75 transition"
+                  title="Delete review"
                 >
                   <X className="h-4 w-4" />
                 </button>
